@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+// Usage: rolex [file] [command] [searchText] [replaceText]
+var fs = require('fs'),
+  sys = require('sys'),
+  spawn = require('child_process').spawn,
+  execSync = require('execSync'),
+  args = process.argv.slice(1),
+  BEEP = "\007";
+
+var file = args[1] || 'less/style.less';
+var preprocessor = args[2] || 'lessc';
+var searchText = args[2] || 'less';
+var replaceText = args[3] || 'css';
+
+String.prototype.replaceAll = function (find, replace) {
+  return this.replace(new RegExp(find, 'g'), replace);
+};
+
+var log = function(){
+  console.log.apply(console, arguments)
+}
+
+fs.exists(file, function (exists) {
+  if ( ! exists ) {
+    log('File', file, 'is missing.')
+    sys.exit(1)
+  } else {
+    newFile = file.replaceAll(searchText, replaceText)
+    log('Watching "'+file+'". When changed, will output to "'+newFile+'"')
+    fs.watch(file, function (event, filename) {
+      if ( event === 'change' ) {
+        var command = preprocessor+' '+file+' > '+newFile
+        log('Running command:', command)
+        var result = execSync.exec(command);
+        if ( result.code !== 0 ) {
+          log(BEEP, "The less compiler command didn't run properly. Your less is broken.")
+        } else {
+          log("Success.")
+        }
+      };
+    });
+  }
+});
