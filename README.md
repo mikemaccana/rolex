@@ -34,3 +34,11 @@ Upon those files being saved, the command will run:
     Success.
 
 If the command fails (eg, your .less file is malformed), your terminal will beep. Fix the file and save again.
+
+# License
+
+MIT license
+
+# Dance
+
+http://www.youtube.com/watch?v=tnar90VEwe4
